@@ -8,6 +8,11 @@ app.post("api/v1/signup", (req, req) => {
   const username = req.body.username;
   const password = req.body.password;
 
+  const user = UserModel.findOne({
+    username: username,
+    password: password
+  })
+
   const keypair = new keypair();
   UserModel.create({
     username,
