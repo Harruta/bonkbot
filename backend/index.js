@@ -35,7 +35,7 @@ app.post("/api/v1/signin", async (req, res) => {
 
   if (user) {
     const token = jwt.sign({
-      id: user
+      id: user._id
     }, process.env.JWT_SECRET);
     res.json({
       token
@@ -47,13 +47,13 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 })
 
-app.post("/api/v1/tnxn/sign", (req, res) => {
+app.post("/api/v1/txn/sign", (req, res) => {
   res.json({
     message: "sign up "
   })
 })
 
-app.post("/api/v1/tnxn", (req, res) => {
+app.post("/api/v1/txn", (req, res) => {
   res.json({
     message: "sign up "
   })

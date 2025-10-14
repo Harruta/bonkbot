@@ -1,3 +1,9 @@
 {
-  "compilerOptions": { "checkJs": true, "strict": true }
+  "compilerOptions": {
+    "checkJs": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"]
+  }
 }

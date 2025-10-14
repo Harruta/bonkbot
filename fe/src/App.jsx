@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Transaction, Connection, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js"
+import axios from "axios";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const fromPubkey = new PublicKey("DfgcjkinjBpg2unCzmQsZQ5ELeMMXuCVdqkY6XAXMfwE");
+
+const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/V2O-WWPQn9hNVj25_ON6z");
+async function sendSol() {
+  const ix = SystemProgram.transfer({
+    fromPubkey: fromPubkey,
+    toPubkey: new PublicKey("FJvMS3kvjKRLUvTqgoZgxk1aoNBuWy546rRuLX3BHmZQ"),
+    lamports: 0.01 * LAMPORTS_PER_SOL
+  })
+  const tx = new Transaction().add(ix);
+
+  const { blockhash } = await connection.getLatestBlockhash();
+  tx.recentBlockhash = blockhash
+  tx.feePayer = fromPubkey
+
+  const serrializeTx = tx.serialize({
+    requireAllSignatures: false,
+    verifySignatures: false
+  })
+  console.log(serrializeTx);
+
+  await axios.post("api/v1/txn/sign", {
+    message: serrializeTx,
+    retry: false
+  })
 }
 
-export default App
+function App() {
+  return (
+    <div className="flex items-center justify-center">
+      <button className="rounded-lg border border-white">
+        Amount
+      </button>
+
+    </div>
+  )
+}
+export default App();
