@@ -1,4 +1,4 @@
-require("dotenv");
+require("dotenv").config()
 const express = require("express")
 // const { userModel } = require("./models");
 const { Keypair, Transaction, Connection } = require("@solana/web3.js");
@@ -7,6 +7,7 @@ const bs58 = require('bs58');
 const cors = require("cors");
 
 const connection = new Connection("https://api.mainnet-beta.solana.com")
+const privateKey = process.env.PRIVATE_KEY?.trim();
 
 const app = express()
 app.use(express.json())
@@ -64,7 +65,7 @@ app.post("/api/v1/txn/sign", async (req, res) => {
   console.log("after serialise")
 
   console.log(bs58)
-  const keyPair = Keypair.fromSecretKey(bs58.default.decode("3pdUnTstuWanUjy7AxjKs7X71SU5jLW95X27uqWWKZEnx8WE2s5sX68zhpFnsDn6F7ozvzZx2ai2nikKFgi9dxp6"));
+  const keyPair = Keypair.fromSecretKey(bs58.default.decode(privateKey));
 
   const { blockhash } = await connection.getLatestBlockhash();
   tx.blockhash = blockhash
