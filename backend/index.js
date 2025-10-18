@@ -5,55 +5,52 @@ const { Keypair, Transaction, Connection } = require("@solana/web3.js");
 const jwt = require("jsonwebtoken");
 const bs58 = require('bs58');
 const cors = require("cors");
-
-const connection = new Connection("https://api.mainnet-beta.solana.com")
 const privateKey = process.env.PRIVATE_KEY?.trim();
 
+const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/V2O-WWPQn9hNVj25_ON6z")
+
 const app = express()
+app.use(cors());
 app.use(express.json())
-app.use(cors())
-const JWT_SECRET = "123456"
 
-// app.post("/api/v1/signup", async (req, res) => {
-//     const username = req.body.username;
-//     const password = req.body.password;
-//     // Validate the inputs using zod, check if the user already exists, hash the password
+app.post("/api/v1/signup", async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
 
-//     const keypair = new Keypair();
-//     await userModel.create({
-//         username,
-//         password,
-//         publicKey: keypair.publicKey.toString(),
-//         privateKey: keypair.secretKey.toString()
-//     })
-//     res.json({
-//         message: keypair.publicKey.toString()
-//     })
-// })
+  const keypair = new Keypair.generate();
+  await UserModel.create({
+    username,
+    password,
+    publicKey: keypair.publicKey.toString(),
+    privateKey: keypair.secretKey.toString()
+  })
+  res.json({
+    message: keypair.publicKey.toString()
+  })
+})
 
-// app.post("/api/v1/signin", async (req, res) => {
-//     const username = req.body.username;
-//     const password = req.body.password;
+app.post("/api/v1/signin", async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
 
-//     const user = await userModel.findOne({
-//         username: username,
-//         password: password
-//     })
+  const user = await UserModel.findOne({
+    username: username,
+    password: password
+  })
 
-//     if (user) {
-//         const token = jwt.sign({
-//             id: user
-//         }, JWT_SECRET)
-//         res.json({
-//             token
-//         })
-//     } else {
-
-//         res.status(403).json({
-//             message: "Credentials are incorrect"
-//         })
-//     }
-// })
+  if (user) {
+    const token = jwt.sign({
+      id: user._id
+    }, process.env.JWT_SECRET);
+    res.json({
+      token
+    })
+  } else {
+    res.status(403).json({
+      message: "invalid credentials"
+    })
+  }
+})
 
 app.post("/api/v1/txn/sign", async (req, res) => {
   const serializedTransaction = req.body.message;
